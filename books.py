@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel,field_validator
 
 class Book(BaseModel):
     id: int
@@ -8,8 +8,13 @@ class Book(BaseModel):
     year_published: int
     edition: str
 
-app = FastAPI()
+    @field_validator('year_published')
+    def validate_year_published(cls, year_published):
+        if year_published < 0 or year_published > 2023:
+            raise ValueError("Published year must be between 0 and 2023")
+        return year_published
 
+app = FastAPI()
 
 books = [
     {
